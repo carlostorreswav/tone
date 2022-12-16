@@ -3,11 +3,44 @@ import { getDefaultSchema } from '../components/Schema'
 import { bufferToWave } from '../components/bufferToWav'
 // import sound from '../public/sound.wav'
 import { useEffect, useRef, useState } from 'react'
+import w1 from './wav/w1.wav'
+import w2 from './wav/w2.wav'
+import w3 from './wav/w3.wav'
+import w4 from './wav/w4.wav'
+import w5 from './wav/w5.wav'
+import w6 from './wav/w6.wav'
 
 export default function Home() {
   const [sound, setSound] = useState(null)
   const [schema, setSchema] = useState()
   const [audioReady, setAudioReady] = useState(null)
+
+  const AudioArray = [
+    {
+      name: 'w1',
+      url: w1,
+    },
+    {
+      name: 'w2',
+      url: w2,
+    },
+    {
+      name: 'w3',
+      url: w3,
+    },
+    {
+      name: 'w4',
+      url: w4,
+    },
+    {
+      name: 'w5',
+      url: w5,
+    },
+    {
+      name: 'w6',
+      url: w6,
+    },
+  ]
 
   const audioRef = useRef()
 
@@ -24,20 +57,25 @@ export default function Home() {
   }, [])
 
   const handleUploadWavSound = (e) => {
-    console.log('handleUploadWavSound')
     const reader = new FileReader()
-    console.log('reader ok')
     reader.onload = (e) => {
-      console.log('reader onload')
       const audioContext = new AudioContext()
-      console.log('audioContext ok')
       audioContext.decodeAudioData(e.target.result).then((buffer) => {
-        console.log('decodeAudioData ok')
         setSound(buffer)
       })
     }
-    console.log('reader readAsArrayBuffer')
     reader.readAsArrayBuffer(e.target.files[0])
+  }
+
+  const processWavSound = (elm) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const audioContext = new AudioContext()
+      audioContext.decodeAudioData(e.target.result).then((buffer) => {
+        setSound(buffer)
+      })
+    }
+    reader.readAsArrayBuffer(elm)
   }
 
   const checkPlugin = (instance) => {
@@ -107,12 +145,19 @@ export default function Home() {
 
   return (
     <div className='App'>
-      <h1>Tone.js - Trying to render offline a Tone Player chain in offline mode</h1>
-      <p>
-        this sandbox is a workaround for the <strong>upload - render - download</strong> process
-        with <strong>Tone.js and React</strong>
-      </p>
-      <p>Also shows the problem when trying to connect a chain inside an offline Tone.js process</p>
+      {AudioArray.map((elm, idx) => (
+        <div
+          key={idx}
+          style={{
+            cursor: 'pointer',
+            padding: '8px',
+            border: '1px solid grey',
+            width: 'fit-content',
+          }}
+          onClick={() => processWavSound(elm.url)}>
+          {elm.name}
+        </div>
+      ))}
       <input type='file' onChange={handleUploadWavSound} />
       <button onClick={() => handleRender()}>
         <h3>CLICK TO RENDER</h3>
